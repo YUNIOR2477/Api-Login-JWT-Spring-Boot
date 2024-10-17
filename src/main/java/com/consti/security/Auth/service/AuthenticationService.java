@@ -7,6 +7,7 @@ import com.consti.security.Auth.config.JwtService;
 import com.consti.security.Auth.entity.Role;
 import com.consti.security.Auth.entity.UserEntity;
 import com.consti.security.Auth.repository.UserEntityRepository;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -42,7 +43,6 @@ public class AuthenticationService {
         if (optionalStudent.isPresent()) {
             return new AuthenticationResponse();
         }
-
 
         repository.save(user);
         var jwtToken = jwtService.generateToken(null, user);

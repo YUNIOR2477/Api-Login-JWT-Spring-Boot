@@ -33,7 +33,7 @@ public class SecurityConfiguration {
                                 .permitAll())
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                         authorizationManagerRequestMatcherRegistry
-                                .requestMatchers("api/v1/user-control/**")
+                                .requestMatchers("api/v1/user-control/**","api/v1/product/**")
                                 .hasAuthority("ADMIN")
                                 .anyRequest()
                                 .authenticated())

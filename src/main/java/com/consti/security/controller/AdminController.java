@@ -1,7 +1,9 @@
 package com.consti.security.controller;
 
 import com.consti.security.Auth.controller.dto.UserDTO;
+import com.consti.security.Auth.controller.request.RegisterRequest;
 import com.consti.security.service.UsersService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,20 +33,22 @@ public class AdminController {
     }
 
     @PatchMapping(path = "{userId}")
-    public void changeStudentRole(@PathVariable("userId") Integer userId) {
+    public ResponseEntity<?> changeStudentRole(@PathVariable("userId") Integer userId) {
         usersService.changeUserRole(userId);
+        return ResponseEntity.ok("Rol de usuario actualizado correctamente");
     }
 
     @PutMapping(path = "{userId}")
-    public void updateStudent(
+    public ResponseEntity<String> updateStudent(
             @PathVariable("userId") Integer userId,
-            @RequestParam(name = "lastname", required = false) String lastname,
-            @RequestParam(name = "firstname", required = false) String firstname,
-            @RequestParam(name = "email", required = false) String email) {
-        usersService.updateUser(userId, lastname, firstname, email);
+            @Valid @RequestBody RegisterRequest update) {
+        usersService.updateUser(userId, update);
+        return ResponseEntity.ok("usuario actualizado correctamente");
     }
+
     @DeleteMapping(path = "{userId}")
-    public void deleteStudent(@PathVariable("userId") Integer userId) {
+    public ResponseEntity<String> deleteStudent(@PathVariable("userId") Integer userId) {
         usersService.deleteUser(userId);
+        return ResponseEntity.noContent().build();
     }
 }

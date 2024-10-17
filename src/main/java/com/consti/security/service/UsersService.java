@@ -1,12 +1,17 @@
 package com.consti.security.service;
 
+import com.consti.security.Auth.controller.request.RegisterRequest;
 import com.consti.security.Auth.entity.Role;
 import com.consti.security.Auth.entity.UserEntity;
 import com.consti.security.Auth.utils.UserMapper;
 import com.consti.security.Auth.controller.dto.UserDTO;
 import com.consti.security.Auth.repository.UserEntityRepository;
+import com.consti.security.exceptions.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,8 +37,7 @@ public class UsersService {
     public void changeUserRole(Integer userId) {
         boolean exists = userEntityRepository.existsById(userId);
         if (!exists) {
-            throw new IllegalStateException(
-                    "El usuario con id: " + userId + " no existe en la DB");
+            throw new ResourceNotFoundException("Usuario", "Id", userId.toString(), "no");
         }
         if (userEntityRepository.getReferenceById(userId).getRole().equals(Role.USER)) {
             UserEntity user = userEntityRepository.getReferenceById(userId);
@@ -46,35 +50,28 @@ public class UsersService {
         }
     }
 
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
     @Transactional
-    public void updateUser(Integer userId, String lastname, String firstname, String email) {
+    public void updateUser(Integer userId, RegisterRequest update) {
         UserEntity user = userEntityRepository.findById(userId).orElseThrow(
-                () -> new IllegalStateException(
-                        "El usuario con id: " + userId + " no existe en la DB"));
+                () -> new ResourceNotFoundException("Usuario", "Id", userId.toString(), "no"));
 
-        if (firstname != null && !firstname.isEmpty() && !Objects.equals(user.getFirstname(), firstname)) {
-            user.setFirstname(firstname);
-        }
+        user.setFirstname(update.getFirstname());
+        user.setLastname(update.getLastname());
+        user.setEmail(update.getEmail());
+        user.setDob(update.getDob());
+        user.setPassword(passwordEncoder().encode(update.getPassword()));
 
-        if (lastname != null && !lastname.isEmpty() && !Objects.equals(user.getLastname(), lastname)) {
-            user.setLastname(lastname);
-        }
-
-        if (email != null && !email.isEmpty() && !Objects.equals(user.getEmail(), email)) {
-            Optional<UserEntity> userEntityOptional = userEntityRepository.findByEmail(email);
-            if (userEntityOptional.isPresent()) {
-                throw new IllegalStateException("Correo electronico tomado");
-            }
-            user.setEmail(email);
-        }
         userEntityRepository.save(user);
     }
 
     public void deleteUser(Integer userId) {
         boolean exists = userEntityRepository.existsById(userId);
         if (!exists) {
-            throw new IllegalStateException(
-                    "El usuario con id: " + userId + " no existe en la DB");
+            throw new ResourceNotFoundException("Usuario", "Id", userId.toString(), "no");
         }
 
         userEntityRepository.deleteById(userId);

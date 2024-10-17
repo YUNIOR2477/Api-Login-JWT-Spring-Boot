@@ -78,11 +78,14 @@ public class ApplicationConfig {
                     "Yunior",
                     "Gonzalez",
                     "yu@gmail.com",
-                    passwordEncoder().encode("1234"),
+                    passwordEncoder().encode("1234567"),
                     LocalDate.of(2000, SEPTEMBER, 7),
                     0,
                     Role.ADMIN
             );
+            userEntityRepository.save(userAdmin);
+
+
             List<Product> productList = new ArrayList<>();
             productList.add(new Product(
                     1,
@@ -94,7 +97,7 @@ public class ApplicationConfig {
                     45.5,
                     99
             ));
-            productList.add( new Product(
+            productList.add(new Product(
                     2,
                     "22222",
                     "Prendas",
@@ -104,7 +107,7 @@ public class ApplicationConfig {
                     29.9,
                     99
             ));
-            productList.add( new Product(
+            productList.add(new Product(
                     3,
                     "33333",
                     "Accesorios",
@@ -114,8 +117,6 @@ public class ApplicationConfig {
                     18.9,
                     99
             ));
-
-            userEntityRepository.save(userAdmin);
             productRepository.saveAll(productList);
         };
     }

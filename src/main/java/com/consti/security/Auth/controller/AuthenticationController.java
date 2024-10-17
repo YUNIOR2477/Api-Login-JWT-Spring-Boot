@@ -4,6 +4,8 @@ import com.consti.security.Auth.controller.request.AuthenticationRequest;
 import com.consti.security.Auth.controller.request.AuthenticationResponse;
 import com.consti.security.Auth.controller.request.RegisterRequest;
 import com.consti.security.Auth.service.AuthenticationService;
+import com.consti.security.exceptions.ResourceNotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,11 +22,11 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
-            @RequestBody RegisterRequest request
+            @Valid @RequestBody RegisterRequest request
     ) {
         AuthenticationResponse response = service.register(request);
         if(response.getToken().isEmpty()){
-            throw new IllegalStateException("El correo: "+request.getEmail()+" ya existe en la DB ");
+            throw new ResourceNotFoundException("Usuario","correo",request.getEmail(),"ya");
         }
         return ResponseEntity.ok(response);
 
@@ -32,7 +34,7 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> authenticate(
-            @RequestBody AuthenticationRequest request
+           @Valid @RequestBody AuthenticationRequest request
     ) {
         return ResponseEntity.ok(service.authenticate(request));
     }
